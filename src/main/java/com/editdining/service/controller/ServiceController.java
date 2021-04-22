@@ -42,8 +42,17 @@ public class ServiceController {
         , @ApiParam(name = "default : 0") @RequestParam(value = "offset", defaultValue = "0")int offset
         , @ApiParam(name = "default : 12") @RequestParam(value = "limit", defaultValue = "12")int limit) {
         List<ServiceDto.Response> list = service.findByCategory(member_id, category, edit_type, sort, offset, limit);
+        long total_count = service.findByCategoryTotal(member_id, category, edit_type);
+        return responseService.getListResult(total_count, list);
+    }
 
-        return responseService.getListResult(list.size(), list);
+    @ApiOperation(value = "2-3. 서비스 상세")
+    @GetMapping(path = "{service_id}")
+    public CommonResult getServiceDetail(
+            @RequestHeader(value="member_id", required = false, defaultValue = "0") int member_id
+            , @PathVariable(value = "service_id")int service_id) {
+        ServiceDto.DetailResponse list = service.getServiceDetail(service_id, member_id);
+        return responseService.getSingleResult(list);
     }
 
     @ApiOperation(value = "5-1. 스크랩")
@@ -59,6 +68,8 @@ public class ServiceController {
             ,  @ApiParam(name = "scrap 등록", required = true) @RequestBody ScrapEntity scrapEntity) {
         return service.deleteScrap(member_id, scrapEntity);
     }
+
+
 
 
 }
