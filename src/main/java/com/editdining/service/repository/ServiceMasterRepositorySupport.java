@@ -96,6 +96,78 @@ public class ServiceMasterRepositorySupport {
         return serviceMasterEntity.edit_type.eq(edit_type);
     }
 
+    public List<ServiceDto.Response> search(String keyword, int category , int member_id, int offset, int limit){
+
+        return queryFactory
+                .select(Projections.fields(ServiceDto.Response.class,
+                        serviceMasterEntity.service_id,
+                        serviceMasterEntity.edit_type,
+                        serviceMasterEntity.thumbnail,
+                        serviceMasterEntity.category,
+                        serviceMasterEntity.title,
+                        serviceMasterEntity.description,
+                        servicePriceEntity.price,
+                        memberEntity.name,
+                        scrapEntity.scrapId.as("is_scrap"),
+                        purchaseReviewEntity.rate.avg().as("rate")))
+                .from(serviceMasterEntity)
+                // 가격
+                .join(servicePriceEntity)
+                .on(servicePriceEntity.priceId
+                        .eq(JPAExpressions.select(servicePriceEntity.priceId.min())
+                                .from(servicePriceEntity)
+                                .where(serviceMasterEntity.service_id.eq(servicePriceEntity.serviceId))))
+                // 회원
+                .join(memberEntity)
+                .on(memberEntity.member_id.eq(serviceMasterEntity.member_id))
+                // 리뷰
+                .leftJoin(purchaseReviewEntity)
+                .on(purchaseReviewEntity.serviceId.eq(serviceMasterEntity.service_id))
+                .leftJoin(scrapEntity)
+                .on(scrapEntity.memberId.eq(serviceMasterEntity.member_id)
+                        .and(scrapEntity.serviceId.eq(serviceMasterEntity.service_id))
+                        .and(scrapEntity.memberId.eq(member_id)))
+                .where(serviceMasterEntity.title.contains(keyword),
+                        eqCategory(category))
+                .groupBy(serviceMasterEntity.service_id)
+                .offset(offset)
+                .limit(limit)
+                .fetch();
+    }
+
+    public long searchTotal(String keyword, int category){
+
+        return queryFactory
+                .selectFrom(serviceMasterEntity)
+                // 가격
+                .join(servicePriceEntity)
+                .on(servicePriceEntity.priceId
+                        .eq(JPAExpressions.select(servicePriceEntity.priceId.min())
+                                .from(servicePriceEntity)
+                                .where(serviceMasterEntity.service_id.eq(servicePriceEntity.serviceId))))
+                // 회원
+                .join(memberEntity)
+                .on(memberEntity.member_id.eq(serviceMasterEntity.member_id))
+                .leftJoin(scrapEntity)
+                .on(scrapEntity.memberId.eq(serviceMasterEntity.member_id)
+                        .and(scrapEntity.serviceId.eq(serviceMasterEntity.service_id)))
+                .where(serviceMasterEntity.title.contains(keyword),
+                        eqCategory(category))
+                .groupBy(serviceMasterEntity.service_id)
+                .fetchCount();
+    }
+
+    private BooleanExpression eqCategory(Integer category) {
+        if (category == null || category == 0) {
+            return null;
+        }
+        return serviceMasterEntity.category.eq(category);
+    }
+
+
+
+
+
     public ServiceDto.DetailResponse getServiceDetail(int service_id, int member_id) {
         return queryFactory
                 .select(Projections.fields(ServiceDto.DetailResponse.class,

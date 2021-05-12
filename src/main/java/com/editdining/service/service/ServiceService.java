@@ -22,6 +22,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -32,7 +33,6 @@ public class ServiceService {
     private final ServiceMediaRepository mediaRepo;
     private final ServicePriceRepository priceRepo;
     private final ScrapRepository scrapRepo;
-    private final PurchaseReviewRepository purchaseReviewRepo;
     private final ServiceMediaRepository serviceMediaRepository;
 
     private final ServiceMasterRepositorySupport masterRepoSupport;
@@ -46,8 +46,10 @@ public class ServiceService {
     public CommonResult save(@Valid ServiceDto.Save saveDto) throws IOException {
 
         // 1. master에 insert
-        String filepath = uploader.upload(saveDto.getThumbnail());
-        saveDto.setThumbnail_path(filepath);
+        if(saveDto.getThumbnail() != null) {
+            String filepath = uploader.upload(saveDto.getThumbnail());
+            saveDto.setThumbnail_path(filepath);
+        }
         int serviceId = masterRepo.save(saveDto.toEntity()).getService_id();
 
         System.out.println(serviceId);
@@ -65,7 +67,7 @@ public class ServiceService {
         List<ServicePriceEntity> priceRes = priceRepo.saveAll(spcList);
 
         // 3. 파일 업로드 하고, 소개용 사진 테이블에 isert
-        List<Media.Request> mediaList = saveDto.getMediaList();
+        List<Media.Request> mediaList = Optional.ofNullable(saveDto.getMediaList()).orElse(new ArrayList<>());
         List<ServiceMediaEntity> mediaSaveList = new ArrayList<>();
         for(Media.Request media : mediaList) {
             Media.Save tmp = new Media.Save();
@@ -77,7 +79,7 @@ public class ServiceService {
         }
         List<ServiceMediaEntity> mediaRes = mediaRepo.saveAll(mediaSaveList);
 
-        if(priceRes == null || priceRes.size() == 0 || mediaRes == null || mediaRes.size() == 0) {
+        if(priceRes == null || priceRes.size() == 0) {
             return responseService.getFailResult(100, "FAIL_DB_INSERT");
         }
 
