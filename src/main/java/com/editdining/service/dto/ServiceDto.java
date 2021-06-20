@@ -142,6 +142,9 @@ public class ServiceDto implements Serializable {
         private String name;
         private int is_scrap;
 
+        // purchase master
+        private long seller_count;   // 작업 건수
+
         // review - 대표리뷰, 평균 평점
         private String review;
         private double rate;

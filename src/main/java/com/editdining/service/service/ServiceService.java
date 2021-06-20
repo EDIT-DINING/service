@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -33,7 +32,8 @@ public class ServiceService {
     private final ServiceMediaRepository mediaRepo;
     private final ServicePriceRepository priceRepo;
     private final ScrapRepository scrapRepo;
-    private final ServiceMediaRepository serviceMediaRepository;
+    private final ServiceMediaRepository serviceMediaRepo;
+    private final PurchaseMasterRepository purchaseMasterRepo;
 
     private final ServiceMasterRepositorySupport masterRepoSupport;
 
@@ -121,7 +121,7 @@ public class ServiceService {
         ServiceDto.DetailResponse detail = masterRepoSupport.getServiceDetail(service_id, member_id);
         List<ServicePriceEntity> priceList = priceRepo.findByServiceId(service_id);
         detail.setPrice_list(priceList);
-        List<ServiceMediaEntity> mediaList = serviceMediaRepository.findByServiceId(service_id);
+        List<ServiceMediaEntity> mediaList = serviceMediaRepo.findByServiceId(service_id);
         detail.setMediaList(mediaList);
         return detail;
         

@@ -2,6 +2,7 @@ package com.editdining.service.repository;
 
 import com.editdining.service.dto.ServiceDto;
 import com.editdining.service.entity.ScrapEntity;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -12,11 +13,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.editdining.service.entity.QPurchaseMasterEntity.purchaseMasterEntity;
 import static com.editdining.service.entity.QServiceMasterEntity.serviceMasterEntity;
 import static com.editdining.service.entity.QServicePriceEntity.servicePriceEntity;
 import static com.editdining.service.entity.QMemberEntity.memberEntity;
 import static com.editdining.service.entity.QScrapEntity.scrapEntity;
 import static com.editdining.service.entity.QPurchaseReviewEntity.purchaseReviewEntity;
+import static com.querydsl.core.types.ExpressionUtils.count;
 
 @Repository
 @RequiredArgsConstructor
@@ -180,7 +183,12 @@ public class ServiceMasterRepositorySupport {
                         memberEntity.profile_img,
                         memberEntity.name,
                         scrapEntity.scrapId.as("is_scrap"),
-                        purchaseReviewEntity.rate.avg().as("rate")))
+                        purchaseReviewEntity.rate.avg().as("rate"),
+                        ExpressionUtils.as(
+                                JPAExpressions.select(count(purchaseMasterEntity.purchaseId))
+                                        .from(purchaseMasterEntity)
+                                        .where(purchaseMasterEntity.sellerId.eq(serviceMasterEntity.member_id)),"seller_count")
+                        ))
                 .from(serviceMasterEntity)
                 // 회원
                 .join(memberEntity)
@@ -194,6 +202,7 @@ public class ServiceMasterRepositorySupport {
                         .and(scrapEntity.serviceId.eq(serviceMasterEntity.service_id))
                         .and(scrapEntity.memberId.eq(member_id)))
                 .where(serviceMasterEntity.service_id.eq(service_id))
+                .groupBy(serviceMasterEntity.service_id)
                 .fetchOne();
 
     }
