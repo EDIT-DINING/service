@@ -138,9 +138,8 @@ public class ServiceDto implements Serializable {
         private List<ServicePriceEntity> price_list;
 
         // member
-        private String seller;
+        private String profile_img;
         private String name;
-        private double grade;
         private int is_scrap;
 
         // review - 대표리뷰, 평균 평점

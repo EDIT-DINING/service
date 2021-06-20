@@ -16,5 +16,6 @@ public class MemberEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int member_id;
-    String name;
+    private String name;
+    private String porfile_img;
 }
