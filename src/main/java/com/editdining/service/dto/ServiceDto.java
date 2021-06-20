@@ -49,6 +49,10 @@ public class ServiceDto implements Serializable {
         @ApiModelProperty(name = "description", value = "설명", example = "서비스 설명")
         private String description;
 
+        @ApiModelProperty(name = "cancel_refund_policy", value = "취소 및 환불 규정", example = "7일 이내 취소시 100퍼 환불..")
+        private String cancel_refund_policy;
+
+
         // price
         @ApiModelProperty(dataType="List", name = "priceList", required = true)
         @NotNull
@@ -69,6 +73,7 @@ public class ServiceDto implements Serializable {
                     .title(title)
                     .thumbnail(thumbnail_path)
                     .description(description)
+                    .cancel_refund_policy(cancel_refund_policy)
                     .mtime(LocalDateTime.now())
                     .rtime(LocalDateTime.now())
                     .build();
@@ -133,6 +138,7 @@ public class ServiceDto implements Serializable {
         private String thumbnail;
         @ApiModelProperty(name = "description", value = "설명", example = "서비스 설명")
         private String description;
+        private String cancel_refund_policy;
 
         // price
         private List<ServicePriceEntity> price_list;

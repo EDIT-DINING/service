@@ -180,6 +180,7 @@ public class ServiceMasterRepositorySupport {
                         serviceMasterEntity.edit_type,
                         serviceMasterEntity.thumbnail,
                         serviceMasterEntity.description,
+                        serviceMasterEntity.cancel_refund_policy,
                         memberEntity.profile_img,
                         memberEntity.name,
                         scrapEntity.scrapId.as("is_scrap"),

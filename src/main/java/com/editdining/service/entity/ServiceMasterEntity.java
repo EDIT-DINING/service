@@ -25,6 +25,5 @@ public class ServiceMasterEntity {
 	private LocalDateTime rtime;
 	private LocalDateTime mtime;
 	private int member_id;
-	
-
+	private String cancel_refund_policy;
 }
