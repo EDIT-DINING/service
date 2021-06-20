@@ -177,7 +177,7 @@ public class ServiceMasterRepositorySupport {
                         serviceMasterEntity.edit_type,
                         serviceMasterEntity.thumbnail,
                         serviceMasterEntity.description,
-                        memberEntity.porfile_img,
+                        memberEntity.profile_img,
                         memberEntity.name,
                         scrapEntity.scrapId.as("is_scrap"),
                         purchaseReviewEntity.rate.avg().as("rate")))
