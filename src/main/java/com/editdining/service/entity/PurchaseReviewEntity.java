@@ -13,8 +13,9 @@ import javax.persistence.Table;
 @Setter
 public class PurchaseReviewEntity {
     @Id
-    private int serviceId;
+    private int purchaseId;
     private double rate;
     private String review;
     private String reply;
+    private int serviceId;
 }

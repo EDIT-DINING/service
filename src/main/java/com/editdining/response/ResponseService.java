@@ -1,7 +1,9 @@
 package com.editdining.response;
 
+import com.editdining.service.dto.ReviewDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +57,23 @@ public class ResponseService {
 		ListResult<T> result = new ListResult<>();
 		result.setTotal_count(size);
 		result.setList(list);
+		setSuccessResult(result);
+		return result;
+	}
+
+	public <T> PageResult<T> getPageResult(Page<T> list) {
+		PageResult<T> result = new PageResult<>();
+		result.setList(list.getContent());
+		result.setTotalPages(list.getTotalPages());
+		result.setTotalElements(list.getTotalElements());
+		result.setLast(list.isLast());
+		result.setFirst(list.isFirst());
+		result.setHasPrevious(list.hasPrevious());
+		result.setHasNext(list.hasNext());
+		result.setPageable(list.getPageable());
+		result.setSize(list.getSize());
+		result.setSort(list.getSort());
+		result.setNumberOfElements(list.getNumberOfElements());
 		setSuccessResult(result);
 		return result;
 	}
